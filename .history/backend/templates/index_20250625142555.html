@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3MTT Knowledge Showcase – Product Recommendation (June)</title>
+
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        padding: 40px 20px;
+        background: linear-gradient(to right, #e0f7fa, #f1f8e9);
+        color: #333;
+      }
+
+      h2,
+      h3 {
+        text-align: center;
+        color: #2e7d32;
+        margin-bottom: 10px;
+      }
+
+      p.center {
+        text-align: center;
+        font-size: 18px;
+        color: #555;
+      }
+
+      form {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 40px;
+      }
+
+      input[type="text"] {
+        width: 300px;
+        padding: 12px 15px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+      }
+
+      input[type="submit"] {
+        padding: 12px 25px;
+        font-size: 16px;
+        background-color: #2e7d32;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        margin-left: 10px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      input[type="submit"]:hover {
+        background-color: #1b5e20;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 25px;
+      }
+
+      .card {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+      }
+
+      .card img {
+        width: 100%;
+        height: 200px;
+        object-fit: contain;
+        margin-bottom: 15px;
+      }
+
+      .card-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #222;
+        height: 48px;
+        overflow: hidden;
+        margin-bottom: 8px;
+      }
+
+      .card-description {
+        font-size: 14px;
+        color: #555;
+        height: 50px;
+        overflow: hidden;
+        margin-bottom: 12px;
+      }
+
+      .price {
+        font-size: 15px;
+        margin-bottom: 10px;
+      }
+
+      .rating {
+        color: #f39c12;
+        margin-bottom: 10px;
+      }
+
+      .card a {
+        display: inline-block;
+        padding: 8px 15px;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 14px;
+        transition: background-color 0.3s ease;
+      }
+
+      .card a:hover {
+        background-color: #0056b3;
+      }
+
+      .banner {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .banner img {
+        width: 100px;
+        margin-bottom: 10px;
+      }
+
+      .banner p {
+        font-size: 20px;
+        font-weight: bold;
+        color: #388e3c;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 3MTT Showcase Banner -->
+    <div class="banner">
+      <img
+        src="http://127.0.0.1:5000/Group-5.png"
+        alt="3MTT Logo"
+      />
+      <p>🏆 Final Project – 3MTT Knowledge Showcase (June Edition)</p>
+    </div>
+
+    <!-- Main heading -->
+    <!-- Main heading -->
+    <h2>3MTT Knowledge Showcase – June</h2>
+    <p class="center">
+      Product Recommendation System using Amazon Dataset and  AI & Machine Learning
+    </p>
+
+    <!-- Search form -->
+    <form action="/recommend" method="post">
+      <input
+        type="text"
+        name="query"
+        placeholder="Search for computer, charger, etc"
+      />
+      <input type="submit" value="Recommend" />
+    </form>
+
+    <!-- Product results container -->
+    <div id="results"></div>
+
+    <!-- JavaScript logic -->
+    <script>
+      const form = document.querySelector("form");
+      const resultsDiv = document.getElementById("results");
+
+      form.onsubmit = async function (e) {
+        e.preventDefault();
+        const query = form.query.value;
+
+        const res = await fetch("/recommend", {
+          method: "POST",
+          body: new URLSearchParams({ query }),
+        });
+
+        const data = await res.json();
+        renderProducts(data, "Recommended Products");
+      };
+
+      window.onload = async function () {
+        const res = await fetch("/trending");
+        const data = await res.json();
+        renderProducts(data, "🔥 Trending Products");
+      };
+
+      function renderProducts(data, title) {
+        resultsDiv.innerHTML = `<h3>${title}</h3>`;
+
+        if (data.length <= 0) {
+          resultsDiv.innerHTML += "<p>No products found.</p>";
+          return;
+        }
+
+        const grid = document.createElement("div");
+        grid.className = "grid";
+
+        data.forEach((item) => {
+          const card = document.createElement("div");
+          card.className = "card";
+          card.innerHTML = `
+                    <img src="${item.img_link}" alt="Product Image">
+                    <div class="card-title">${item.product_name}</div>
+                    <div class="card-description">${item.about_product}</div>
+                    <div class="rating">⭐ ${item.rating}</div>
+                    <div class="price">
+                        <del>${item.actual_price}</del> 
+                        <strong style="color:green;">${item.discounted_price}</strong>
+                    </div>
+                    <a href="${item.product_link}" target="_blank">View Product</a>
+                `;
+          grid.appendChild(card);
+        });
+
+        resultsDiv.appendChild(grid);
+      }
+    </script>
+  </body>
+</html>
