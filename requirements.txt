@@ -1,2 +1,7 @@
-pandas
 numpy
+pandas
+seaborn
+matplotlib
+scikit-learn
+nltk
+joblib
