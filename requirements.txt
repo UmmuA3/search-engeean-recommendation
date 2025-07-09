@@ -1,9 +1,9 @@
-numpy
+numpy<2.0
 pandas
 flask
 seaborn
 matplotlib
-scikit-learn
+scikit-learn==1.5.1
 nltk
 joblib
 gunicorn
